@@ -1,5 +1,11 @@
 #!/bin/bash
 
 touch $1
-echo "#include<stdio.h>\n#include<stdlib.h>\n\nint main()\n{\n\n}" >> $1
+echo "#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+
+}" > $1
 vim $1
