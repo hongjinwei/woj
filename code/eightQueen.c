@@ -68,6 +68,6 @@ void put(int t, int n) //put the t's row
 
 int main()
 {
-	int n = 92;
+	int n = 1;
 	put(0,n);
 }
