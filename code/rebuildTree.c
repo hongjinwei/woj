@@ -1,34 +1,45 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#define MAX 50
 /*
  *重建二叉树。给定先序和中序序列后重新构建二叉树
  *http://ac.jobdu.com/problem.php?pid=1385
  */
 
-//未完成
-
-int parent[50];
+//version 2.0
 typedef struct BTNode{
 	int data;
 	struct BTNode *lchild;
 	struct BTNode *rchild;
 }BTNode;
 
+int parent[MAX]={0};
+int mid[MAX]= {4,7,2,1,5,3,8,6};
+int fore[MAX] = {1,2,4,7,3,5,6,8};
+
 int locate(int x,int a[],int size)
 {
-	for(int i=0;i<size;i++){
-		if(a[i] == x){
-			return i;
-		}
-	}	
-	return -1;
+    for(int i=0;i<size;i++){
+        if(a[i] == x){
+            return i;
+        }
+    }
+    return -1;
 }
 
-//判断a是不是b的祖先
-int isParent(int a,int b)
+void setParent(int root,int data)
 {
-	while(parent[b] != 0){
+	parent[data] = root;
+}
+
+//if a is b's ancestor return 1
+int isParent(int a, int b)
+{
+	if(parent[a] == -1){
+		return 1;
+	}
+
+	while(parent[b] != -1){
 		if(parent[b] == a){
 			return 1;
 		}
@@ -37,118 +48,175 @@ int isParent(int a,int b)
 	return 0;
 }
 
-
-//给定父节点的先序遍历序列中的下标，返回左子树的下标，若为空返回-1
-int locateLeftChild(int p,int fore[],int mid[],int size)
+int getLchild(int a,int size)
 {
-	if(p<0 || p>=(size-1)){
-		return -1;
-	}	
-	
-	int midp; 
-	int root = locate(fore[p],mid,size);
-	for(int i=p+1;i<size;i++){
-		midp = locate(fore[i],mid,size);
-		if( midp< root){
-			return midp;
-		}	
+	int midp = locate(a,mid,size);	
+	int forep = locate(a,fore,size);	
+	int parentp = locate(parent[a],mid,size);
+	int k;	
+	if(parentp >= 0){
+		for(int i=forep+1;i<size;i++){
+			k = locate(fore[i],mid,size);
+			if((midp > parentp && k<midp && k>parentp) || (midp < parentp && k<midp)){
+				//setParent(a,fore[i]);
+				//for(int j=midp+1;j<=k;j++){
+				//	if(isParent(mid[j],a))
+				//		return -1;
+				//}
+				return fore[i];
+			}
+		}
+	}else{
+		for(int i=forep+1;i<size;i++){
+			k = locate(fore[i],mid,size);
+			if(k<midp){
+				//setParent(a,fore[i]);
+				return fore[i];
+			}
+		}
 	}
 	return -1;
 }
 
-int locateRightChild(int p,int fore[],int mid[],int size)
+int getRchild(int a,int size)
 {
-	if(p<0 || p>=(size-1)){
-		return -1;
-	}	
-
-	int midp; 
-	int root = locate(fore[p],mid,size);
-	for(int i=p+1;i<size;i++){
-		midp = locate(fore[i],mid,size);
-		if(midp > root){
-			break;
-		}	
-	}
-	for(int i=root+1;i<midp;i++){
-		if(isParent(mid[i],mid[midp])||isParent(mid[i],mid[midp])){
-			return -1;
+	int midp = locate(a,mid,size);	
+	int forep = locate(a,fore,size);	
+	int parentp = locate(parent[a],mid,size);
+	int k;
+	if(parentp >= 0){
+		for(int i=forep+1;i<size;i++){
+			k = locate(fore[i],mid,size);
+			if((midp < parentp && k>midp && k<parentp) || (midp > parentp && k>midp)){
+				//setParent(a,fore[i]);
+				for(int j=midp+1;j<=k;j++){
+					if(parent[mid[j]] != 0 && isParent(mid[j],a)){
+						return -1;
+					}
+				}
+				return fore[i];
+			}
+		}
+	}else{
+		for(int i=forep+1;i<size;i++){
+			k = locate(fore[i],mid,size);
+			if(k>midp){
+				//setParent(a,fore[i]);
+				return fore[i];
+			}
 		}
 	}
-	return midp;
+	return -1;
 }
 
 BTNode *createNode(int n)
 {
-	BTNode *p = (BTNode *)malloc(sizeof(BTNode));
-	p->data = n;
-	p->lchild = NULL;
-	p->rchild = NULL;
-	return p;
+    BTNode *p = (BTNode *)malloc(sizeof(BTNode));
+    p->data = n;
+    p->lchild = NULL;
+    p->rchild = NULL;
+    return p;
 }
 
-void build(BTNode *root,int left,int right,int mid[])
+void build(BTNode *root,int ldata,int rdata)
 {
-	BTNode *p;
-	if(-1 == left){
-		root->lchild = NULL;
-	}else{
-		p = createNode(mid[left]);
-		root->lchild = p;
-	}
-	
-	if(-1 == right){
-		root->rchild = NULL;
-	}else{
-		p = createNode(mid[right]);
-		root->rchild = p;
+    BTNode *p;
+    if(-1 == ldata){
+        root->lchild = NULL;
+    }else{
+        p = createNode(ldata);
+        root->lchild = p;
+    }
+
+    if(-1 == rdata){
+        root->rchild = NULL;
+    }else{
+        p = createNode(rdata);
+        root->rchild = p;
+    }
+}
+
+void buildTree(BTNode *root, int size)
+{
+    if(root != NULL){
+        int l = getLchild(root->data,size);
+        int r = getRchild(root->data,size);
+        build(root,l,r);
+        buildTree(root->lchild,size);
+        buildTree(root->rchild,size);
+    }
+}
+
+void init(int size)
+{
+	parent[fore[0]] = -1;
+	int a,l,r;
+	for(int i=0;i<size;i++){
+		a = fore[i];
+		l = getLchild(a,size);
+		r = getRchild(a,size);
+		//printf("===root %d l %d r %d \n",a,l,r);
+		if(l!=-1){
+			setParent(a,l);
+			//printf("parent[%d] = %d\n",l,a);
+		}
+		if(r!=-1){
+			setParent(a,r);
+			//printf("parent[%d] = %d\n",r,a);
+		}
 	}
 }
 
-void setParent(int root,int l, int r,int mid[])
+void printParent(int size)
 {
-	if(l!=-1){
-		parent[mid[l]] = root;
-	}
-	if(r!=-1){
-		parent[mid[r]] = root;
-	}
+	for(int i=1;i<=size;i++){
+		printf("%d's parent is %d\n",i,parent[i]);	
+	}	
 }
 
-void buildTree(BTNode *root,int p,int fore[], int mid[], int size)
+void printTreeMid(BTNode *p)
 {
-	if(root != NULL){
-		int l = locateLeftChild(p,fore,mid,size);
-		int r = locateRightChild(p,fore,mid,size);
-		printf("root %d ",p);
-		printf("l %d r %d\n",l,r);
-		build(root,l,r,mid);
-		setParent(root->data,l,r,mid);
-		buildTree(root->lchild,l,fore,mid,size);
-		buildTree(root->rchild,r,fore,mid,size);
-	}
+	if(p!=NULL){
+		printTreeMid(p->lchild);
+		printf("%d ",p->data);
+		printTreeMid(p->rchild);
+	}	
+}
+
+void printTreeFore(BTNode *p)
+{
+	if(p!=NULL){
+		printf("%d ",p->data);
+		printTreeFore(p->lchild);
+		printTreeFore(p->rchild);
+	}	
 }
 
 int main()
 {
-	int size;
-	int fore[50] = {1,2,4,7,3,5,6,8};
-	int mid[50]= {4,7,2,1,5,3,8,6};
+    int size;
 	//scanf("%d",&size);
-	//for(int i=0;i<size;i++){
-	//	scanf("%d",&fore[i]);
-	//}
-	//for(int i=0;i<size;i++){
-	//	scanf("%d",&mid[i]);
-	//}
-	size = 8;	
-	int n;
-	//while(scanf("%d",&n) != -1){
-	//	printf("left %d\n",locateLeftChild(n,fore,mid,size));
-	//	printf("right %d\n",locateRightChild(n,fore,mid,size));
-	//}
-	BTNode *root = createNode(fore[0]);
-	parent[fore[0]] = 0;
-	buildTree(root,0,fore,mid,size);
-	return 0;
+    //for(int i=0;i<size;i++){
+    //  scanf("%d",&fore[i]);
+    //}
+    //for(int i=0;i<size;i++){
+    //  scanf("%d",&mid[i]);
+    //}
+    size = 8;
+	init(size);
+    //int n;
+    //while(scanf("%d",&n) != -1){
+    //  printf("left %d\n",getLchild(n,size));
+    //  printf("right %d\n",getRchild(n,size));
+    //}
+    BTNode *root = createNode(fore[0]);
+    //parent[fore[0]] = 0;
+    buildTree(root,size);
+	printTreeMid(root);
+	printf("\n");
+	printTreeFore(root);
+	printf("\n");
+	printParent(size);
+    return 0;
 }
+
