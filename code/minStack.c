@@ -2,6 +2,9 @@
 #include<stdlib.h>
 #define MAX 100
 
+/*
+ *get the minimum of the numbers in the stack
+ */
 int stack[MAX];
 int top = -1;
 
@@ -39,13 +42,14 @@ int main()
 	scanf("%d",&n);	
 	while(n--){
 		scanf("%c",&c);	
-		getchar();
 		if(c == 's'){
 			scanf("%d",&num);
+			getchar();
 			push(num);
 			printf("%d\n",getMin());
 		}
 		if(c == 'o'){
+			getchar();
 			if(isEmpty()){
 				printf("NULL\n");
 			}else{
