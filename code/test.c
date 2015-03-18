@@ -5,14 +5,17 @@ int change(int *c)
 {
 	(*c)++;
 }
+
+void test1()
+{
+	char j;
+	for(int i=0;i<2;i++){
+		scanf("%c",&j);
+	}
+	printf("%d",j);
+}
 int main()
 {
-	char a[5];
-	char b[5];
-	while(1){
-		//gets(a);
-		scanf("%s %s",&a,&b);
-		printf("%c\n",a[0]);
-		printf("%c\n",b[0]);
-	}
+	test1();
+		
 }
