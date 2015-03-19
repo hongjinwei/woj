@@ -6,6 +6,10 @@
 char a[MAX] = {0};
 int size=0;
 
+/*
+ *按字典数序输出字符串的全排列
+ *
+ */
 void quicksort(int l,int r)
 {
 	if(l<r){
