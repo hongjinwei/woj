@@ -104,8 +104,34 @@ void test3()
 	//print(num,size);		
 	permutation(0,size,num);
 }
+
+void test4()
+{
+	int a[20];
+	char b[20][20];
+	/*
+	scanf("%d",&a[0]);
+	printf("%d\n",a[0]);
+	scanf("%s",a);
+	printf("%s\n",a);
+	scanf("%s",b[0]);
+	printf("%s\n",b[0]);
+	scanf("%s",&b[0]);
+	printf("%s\n",b[0]);
+	*/
+	//scanf("%s",&a[0]);
+	
+
+	scanf("%s",&a[0]);
+	printf("%s\n",a);
+	scanf("%s",&a);
+	printf("%s\n",a);
+	scanf("%s",a);
+	printf("%s\n",a);
+}
+
 int main()
 {
-	test3();
+	test4();
 
 }

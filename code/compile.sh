@@ -1,1 +1,1 @@
-gcc -std=c99 $1
+gcc -std=c99 -lm $1
